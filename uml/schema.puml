@@ -1,0 +1,84 @@
+@startuml
+left to right direction
+skinparam linetype ortho
+skinparam ranksep 80
+skinparam nodesep 50
+
+
+title Air Quality Snowflake
+
+class "Fact_Measurements" as fact {
+    * measurement_id : BIGINT [PK]
+    --
+    * station_key : INT [FK]
+    * parameter_key : INT [FK]
+    * time_key : BIGINT [FK]
+    --
+    value : FLOAT64
+    quality_ratio : FLOAT64
+    pollution_level : INT
+    offset_minutes : INT
+    raw_timestamp : TIMESTAMP
+}
+
+' DIM STATION (SCD TYPE 2)
+class "Dim_Stations" as dim_station {
+    * station_key : INT [PK]
+    --
+    station_id : INT
+    station_name : TEXT
+    latitude : FLOAT64
+    longitude : FLOAT64
+    timezone_offset : INT
+    --
+    valid_from : TIMESTAMP
+    valid_to : TIMESTAMP
+    is_current : BOOLEAN
+}
+
+' DIM PARAMETER (SCD TYPE 2)
+class "Dim_Parameters" as dim_param {
+    * parameter_key : INT [PK]
+    --
+    parameter_code : TEXT
+    parameter_name : TEXT
+    local_name : TEXT
+    unit_key : INT [FK]
+    --
+    valid_from : TIMESTAMP
+    valid_to : TIMESTAMP
+    is_current : BOOLEAN
+}
+
+
+' DIM UNIT (OPTIONAL NORMALIZATION)
+class "Dim_Units" as dim_unit {
+    * unit_key : INT [PK]
+    --
+    unit_name : TEXT
+    unit_symbol : TEXT
+    local_unit_name : TEXT
+}
+
+' DIM TIME
+class "Dim_Time" as dim_time {
+    * time_key : BIGINT [PK]
+    --
+    full_timestamp : TIMESTAMP
+    date : DATE
+    hour : INT
+    day : INT
+    day_of_week : INT
+    month : INT
+    quarter : INT
+    year : INT
+}
+
+' RELATIONSHIPS
+dim_station -[hidden]left-> dim_param
+fact }o---|| dim_station : "station"
+fact }o---|| dim_param : "parameter"
+fact }o--|| dim_time : "time"
+
+dim_param }o--|| dim_unit : "unit"
+@enduml
