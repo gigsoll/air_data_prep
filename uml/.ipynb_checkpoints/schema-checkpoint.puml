@@ -4,21 +4,20 @@ skinparam linetype ortho
 skinparam ranksep 80
 skinparam nodesep 50
 
-
-title Air Quality Snowflake
+title Air Quality Schema (Merged Time)
 
 class "Fact_Measurements" as fact {
     * measurement_id : BIGINT [PK]
     --
     * station_key : INT [FK]
     * parameter_key : INT [FK]
-    * time_key : BIGINT [FK]
     --
     value : FLOAT64
     quality_ratio : FLOAT64
     pollution_level : INT
+    --
+    measurement_timestamp : TIMESTAMP
     offset_minutes : INT
-    raw_timestamp : TIMESTAMP
 }
 
 ' DIM STATION (SCD TYPE 2)
@@ -51,7 +50,7 @@ class "Dim_Parameters" as dim_param {
 }
 
 
-' DIM UNIT (OPTIONAL NORMALIZATION)
+' DIM UNIT
 class "Dim_Units" as dim_unit {
     * unit_key : INT [PK]
     --
@@ -60,25 +59,10 @@ class "Dim_Units" as dim_unit {
     local_unit_name : TEXT
 }
 
-' DIM TIME
-class "Dim_Time" as dim_time {
-    * time_key : BIGINT [PK]
-    --
-    full_timestamp : TIMESTAMP
-    date : DATE
-    hour : INT
-    day : INT
-    day_of_week : INT
-    month : INT
-    quarter : INT
-    year : INT
-}
-
 ' RELATIONSHIPS
 dim_station -[hidden]left-> dim_param
 fact }o---|| dim_station : "station"
 fact }o---|| dim_param : "parameter"
-fact }o--|| dim_time : "time"
 
 dim_param }o--|| dim_unit : "unit"
 @enduml

@@ -24,6 +24,7 @@ services:
             - GRANT_SUDO=yes
             # Starts JupyterLab instead of the classic Notebook interface
             - JUPYTER_ENABLE_LAB=yes
+        env_file: ./.env
         restart: no
 
 volumes:
