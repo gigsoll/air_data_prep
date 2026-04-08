@@ -7,6 +7,8 @@ services:
             MYSQL_DATABASE: ${MYSQL_DATABASE} # Database name to create (from .env)
             MYSQL_USER: ${MYSQL_USER} # Additional DB user (from .env)
             MYSQL_PASSWORD: ${MYSQL_PASSWORD} # Additional user password (from .env)
+            LANG: C.UTF-8
+
         volumes:
             - db_data:/var/lib/mysql
         ports:
